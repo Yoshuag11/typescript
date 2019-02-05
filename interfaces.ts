@@ -134,10 +134,10 @@
 // let squareOptions = { width: 100, opacity: 0.5 };
 // let mySquare = createSquare( squareOptions );
 
-// Function Types
-interface SearchFunc {
-	( source: string, subString: string ): boolean;
-}
+// // Function Types
+// interface SearchFunc {
+// 	( source: string, subString: string ): boolean;
+// }
 
 // let mySearch: SearchFunc;
 
@@ -155,11 +155,201 @@ interface SearchFunc {
 // 	return result > -1;
 // }
 
-// typescript's contextual typing can infer the argument types since the
-// function value is assigned directly to a variable of type SearchFunc.
-let mySearch: SearchFunc;
+// // typescript's contextual typing can infer the argument types since the
+// // function value is assigned directly to a variable of type SearchFunc.
+// let mySearch: SearchFunc;
 
-mySearch = function ( src, sub ) {
-	let result = src.search( sub );
-	return result > -1;
-};
+// mySearch = function ( src, sub ) {
+// 	let result = src.search( sub );
+// 	return result > -1;
+// };
+
+// // Indexable Types
+// // the following interface has an index signature that states that when it is index
+// // with a number, it will return a string.
+// interface StringArray {
+// 	[ index: number ]: string;
+// }
+
+// let myArray: StringArray;
+
+// myArray = [ 'Bob', 'Fred' ];
+
+// let myStr: string = myArray[ 0 ];
+
+// // there are two types fo supported index signatures: string and number. It is possible
+// // to support both types of indexers, but the type returned from a numeric indexer must
+// // be a subtype of the type returned from the string indexer. This is because when
+// // indexing with a number, JavaScript will actually convert that to a string before
+// // indexing into an object.
+// class Animal {
+// 	name: string;
+// }
+// class Dog extends Animal {
+// 	breed: string;
+// }
+
+// // Error: indexing with a numeric string might get you a completely separate type of
+// // Animal!
+// interface NotOkay {
+// 	[ x: number ]: Animal;
+// 	[ x: string ]: Dog;
+// }
+
+// interface NumberDictionary {
+// 	[ index: string ]: number;
+// 	length: number; // ok, length is a number
+// 	name: string; // error, the type of 'name' is not a subtype of the indexer
+// }
+
+// // you can also make readonly signatures in order to prevent assignment to their indices
+// interface ReadonlyStringArray {
+// 	readonly [ index: number ]: string;
+// }
+
+// let myArray: ReadonlyStringArray = [ 'Alice', 'Bob' ];
+
+// myArray[ 2 ] = 'Mallory'; // error!
+
+// // Class Types
+// // Implementing an interface
+// interface ClockInterface {
+// 	currentTime: Date;
+// }
+
+// class Clock implements ClockInterface {
+// 	currentTime: Date;
+// 	constructor ( h: number, m: number ) {}
+// }
+
+// // specifying methods as well
+// // interfaces describe the public side of the class
+// interface ClockInterface {
+// 	currentTime: Date;
+// 	setTime ( d: Date );
+// }
+
+// class Clock implements ClockInterface {
+// 	currentTime: Date;
+// 	setTime ( d: Date ) {
+// 		this.currentTime = d;
+// 	}
+// 	constructor ( h: number, m: number ) {}
+// }
+
+// // Difference between the static and instance sides of classes
+// // it is an error to create an interface with a construct signature and try to create
+// // a class that implements this interface
+// interface ClockConstructor {
+// 	new ( hour: number, minute: number );
+// }
+
+// class Clock implements ClockConstructor {
+// 	currentTime: Date;
+// 	constructor ( h: number, m: number ) {}
+// }
+
+// // this is because when a class implements an interface, only the instance side of
+// // the class is checked. Since the constructor sits in the static side, it is not
+// // included in this check.
+
+// interface ClockConstructor {
+// 	new ( hour: number, minute: number ): ClockInterface;
+// }
+// interface ClockInterface {
+// 	tick();
+// }
+
+// function createClock (
+// 	  ctor: ClockConstructor, hour: number, minute: number ): ClockInterface {
+// 	return new ctor( hour, minute );
+// }
+
+// class DigitalClock implements ClockInterface {
+// 	constructor( h: number, m: number ) {}
+// 	tick () {
+// 		console.log( 'beep beep' );
+// 	}
+// }
+// class AnalogClock implements ClockInterface {
+// 	constructor ( h: number, m: number ) {}
+// 	tick () {
+// 		console.log( 'tick tock' );
+// 	}
+// }
+
+// let digital = createClock( DigitalClock, 12, 17 );
+// let analog = createClock( AnalogClock, 7, 32 );
+
+// // Extending Interfaces
+// interface Shape {
+// 	color: string;
+// }
+// interface Square extends Shape {
+// 	sideLength: number;
+// }
+
+// let square = <Square>{};
+
+// square.color = 'blue';
+// square.sideLength = 10;
+
+// // an interface can extend multiple interfaces, creating a combination of all
+// // if the interfaces
+// interface Shape {
+// 	color: string;
+// }
+// interface PenStroke {
+// 	penWidth: number;
+// }
+// interface Square extends Shape, PenStroke {
+// 	sideLength: number;
+// }
+
+// let square = <Square>{};
+
+// square.color = 'blue';
+// square.sideLength = 10;
+// square.penWidth = 5.0;
+
+// // Hybrid Types
+// interface Counter {
+// 	( start: number ): string;
+// 	interval: number;
+// 	reset(): void;
+// }
+
+// function getCounter(): Counter {
+// 	let counter = <Counter>function ( start: number ) {};
+
+// 	counter.interval = 123;
+// 	counter.reset = function () {};
+// 	return counter;
+// }
+
+// let c = getCounter();
+
+// c( 10 );
+// c.reset();
+// c.interval = 5.0;
+
+// // Interfaces Extending Classes
+// class Control {
+// 	private state: any;
+// }
+
+// interface SelectableControl extends Control {
+// 	select(): void;
+// }
+
+// class Button extends Control implements SelectableControl {
+// 	select() {}
+// }
+// class TextBox extends Control {
+// 	select() {}
+// }
+// // error: property 'state' is missing in type 'Image'
+// class Image implements SelectableControl {
+// 	select() {}
+// }
+// class Location {}
