@@ -4,6 +4,7 @@
   "description": "",
   "main": "greeter.js",
   "scripts": {
+    "compile": "tsc --target es6 interfaces.ts && node interfaces.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
