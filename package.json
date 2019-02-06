@@ -4,7 +4,7 @@
   "description": "",
   "main": "greeter.js",
   "scripts": {
-    "compile": "tsc --target es6 classes.ts && node classes.js",
+    "compile": "tsc --target es6 --noImplicitThis functions.ts && node functions.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
