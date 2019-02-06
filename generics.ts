@@ -169,5 +169,10 @@ function createInstance <A extends Animal>( c: new () => A ): A {
 	return new c();
 }
 
+class Test {
+	// numLegs: number;
+}
+
 createInstance( Lion ).keeper.nametag; // typechecks!
 createInstance( Bee ).keeper.hasMask; // typechecks!
+createInstance( Test );
