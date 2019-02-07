@@ -1,18 +1,36 @@
-// Intersection Types
-// example of a mixin
-function extend<T, U> ( first: T, second: U ): T & U {
-	let result = <T & U>{};
+// // Intersection Types
+// // example of a mixin
+// function extend<T, U> ( first: T, second: U ): T & U {
+// 	let result = <T & U>{};
 
-	for ( let id in first ) {
-		( <any>result )[ id ] = ( <any>first )[ id ];
-	}
-	for ( let id in second ) {
-		if ( !result.hasOwnProperty( id ) ) {
-			( <any>result )[ id ] = ( <any>second )[ id ];
-		}
-	}
-	return result;
-}
+// 	for ( let id in first ) {
+// 		( <any>result )[ id ] = ( <any>first )[ id ];
+// 	}
+// 	for ( let id in second ) {
+// 		if ( !result.hasOwnProperty( id ) ) {
+// 			( <any>result )[ id ] = ( <any>second )[ id ];
+// 		}
+// 	}
+// 	return result;
+// }
+
+// class Person {
+// 	constructor ( public name: string ) {}
+// }
+
+// interface Loggable {
+// 	log (): void;
+// }
+
+// class ConsoleLogger implements Loggable {
+// 	log () {}
+// }
+
+// var jim = extend( new Person( 'Jim' ), new ConsoleLogger() );
+// var n = jim.name;
+
+// jim.log();
+
 // Union Types
 // function padLeft ( value: string, padding: any ) {
 // 	if ( typeof padding === 'number' ) {
@@ -305,4 +323,191 @@ function extend<T, U> ( first: T, second: U ): T & U {
 // // type alias can not appear on the ride side of a declaration
 // type Yikes = Array<Yikes>;
 
-// Interfaces vs Type Aliases
+// // Interfaces vs Type Aliases
+// type Alias = { num: number }
+// interface Interface {
+// 	num: number;
+// }
+// declare function aliased ( arg: Alias ): Alias;
+// declare function interfaced ( arg: Interface ): Interface;
+
+// // String Literal Types
+// type Easing = 'ease-in' | 'ease-out' | 'ease-in-out';
+
+// class UIElement {
+// 	animate ( dx: number, dy: number, easing: Easing ) {
+// 		if ( easing === 'ease-in' ) {
+// 			// ...
+// 		} else if ( easing === 'ease-out' ) {
+// 		} else if ( easing === 'ease-in-out' ) {
+// 		} else {
+// 			// error! should not pass null or undefined.
+// 		}
+// 	}
+// }
+
+// let button = new UIElement();
+
+// button.animate( 0, 0, 'ease-in' );
+// button.animate( 0, 0, 'uneasy' ); // error: "uneasy" is not allowed here
+
+// // string literal types can be used in the same way to distinguish overloads
+// function createElement ( tagName: 'img' ): HTMLImageElement;
+// function createElement ( tagName: 'input' ): HTMLInputElement;
+// // ... more overloads ...
+// function createElement ( tagName: string ): Element {
+// 	// ... code goes here ...
+// }
+
+// // Numeric Literal Types
+// function rollDie (): 1 | 2 | 3 | 4 | 5 | 6 {
+// 	// ...
+// }
+
+// // these are seldom written explicitly, they can be useful when narrowing
+// // can catch bugs
+// function foo ( x: number ) {
+// 	if ( x !== 1 || x !== 2 ) {
+// 		//
+// 		// Operator '!==' cannot be applied to types '1' and '2'.
+// 	}
+// }
+
+// // Discriminated Unions
+// // 1. types that have a common. singleton type property - the discriminant
+// // 2. a type alias that takes the union of those types - the union.
+// // 3. type guards on the common property
+// interface Square {
+// 	kind: 'square';
+// 	size: number;
+// }
+// interface Rectangle {
+// 	kind: 'rectangle';
+// 	width: number;
+// 	height: number;
+// }
+// interface Circle {
+// 	kind: 'circle';
+// 	radius: number;
+// }
+
+// type Shape = Square | Rectangle | Circle;
+
+// // using the discrimination union
+// function area ( s: Shape ) {
+// 	switch ( s.kind ) {
+// 		case 'square': return s.size * s.size;
+// 		case 'rectangle': return s.height * s.width;
+// 		case 'circle': return Math.PI * s.radius ** 2;
+// 	}
+// }
+
+// //	Exhaustiveness checking
+// interface Triangle {
+// 	kind: 'triangle';
+// 	base: number;
+// }
+
+// type Shape = Square | Rectangle | Circle | Triangle;
+
+// function area ( s: Shape ): number {
+// 	switch ( s.kind ) {
+// 		case 'square': return s.size * s.size;
+// 		case 'rectangle': return s.height * s.width;
+// 		case 'circle': return Math.PI * s.radius ** 2;
+// 		case 'triangle': return s.base;
+// 	}
+// }
+
+// // second method for exhaustiveness uses never
+// function assertNever ( x: never ): never {
+// 	throw new Error( 'Unexpected object: ' + x );
+// }
+// function area ( s: Shape ) {
+// 	switch ( s.kind ) {
+// 		case 'square': return s.size * s.size;
+// 		case 'rectangle': return s.height * s.width;
+// 		case 'circle': return Math.PI * s.radius ** 2;
+// 		case 'triangle': return s.base;
+// 		default: return assertNever( s ); // error here if there are missing cases
+// 	}
+// }
+
+// Polymorphic this types
+class BasicCalculator {
+	public constructor ( protected value = 0 ) {}
+	public currentValue (): number {
+		return this.value;
+	}
+	public add ( operand: number ): this {
+		this.value += operand;
+		return this;
+	}
+	public multiply ( operand: number ): this {
+		this.value *= operand;
+		return this;
+	}
+	// ... other operations go here ...
+}
+
+// let v = new BasicCalculator( 2 ).
+// 	multiply( 5 ).
+// 	add( 1 ).
+// 	currentValue();
+
+// // since the class uses 'this' types, you can extend it and the new class can
+// // use the old methods with no changes
+// class ScientificCalculator extends BasicCalculator {
+// 	public constructor ( value = 0 ) {
+// 		super( value );
+// 	}
+// 	public sin () {
+// 		this.value = Math.sin( this.value );
+// 		return this;
+// 	}
+// 	// ... other operations go here ...
+// }
+
+// let v = new ScientificCalculator( 2 ).
+// 	multiply( 5 ).
+// 	sin().
+// 	add( 1 ).
+// 	currentValue();
+
+// // Index types
+// // with index types, you can get the compiler to check code that uses dynamic
+// // property names.
+// function pluck ( o, names ) {
+// 	return names.map( n => o[ n ] );
+// }
+
+// // here is how you would write and use this function in TypeScript, using the
+// // 'index type query' and 'indexed access' operators
+// function pluck <T, K extends keyof T>( o: T, names: K[] ): T[ K ][] {
+// 	return names.map( n => o[ n ] );
+// }
+
+// interface Person {
+// 	name: string;
+// 	age: number;
+// }
+
+// let person: Person = {
+// 	name: 'Jarid',
+// 	age: 35
+// };
+// // let string: string[] = pluck( person, [ 'name' ] ); // ok, string[]
+
+// // another example
+// function getProperty <T, K extends keyof T>( o: T, name: K ): T[ K ] {
+// 	return o[ name ]; // o[ name ] is of type T[ K ]
+// }
+// // once you return the T[ K ] result, the compiler will instantiate the
+// // actual type of the key, so the return type of getProperty will vary
+// // according to which property you request.
+// let myName: string = getProperty( person, 'name' );
+// let age: number = getProperty( person, 'age' );
+// let unknown = getProperty( person, 'unknown' ); // error, 'unknown' is not in
+// 												// 'name' | 'age'
+
+//	Index types and string index signature
